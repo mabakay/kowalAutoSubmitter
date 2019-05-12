@@ -17,6 +17,7 @@
 (function () {
     'use strict';
 
+    // Validate site
     var formBlock = document.getElementById('serialnumberForm:snPrcessPanel');
     if (formBlock == null) {
         fail();
@@ -37,12 +38,14 @@
         fail();
     }
 
+    // Resize whole data table
     tableBlock.setAttribute('style', 'width: 100%');
 
-
+    // inject extended fields
     formBlock.prepend(htmlToElement('<div class="ui-panel-content ui-widget-content"><div><div class="row"><div class="hidden-md col-xs-4"><label for="ex:kowal_paste">Kod produktu (<input id="ex:kowal_autosubmit" type="checkbox" checked="checked"><label for="ex:kowal_autosubmit">wysyłaj automatycznie</label>)</label></div><div class="hidden-md col-xs-8"><input id="ex:kowal_paste" type="text" placeholder="Zeskanuj lub przepisz kod..." class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all"></div></div></div></div>'));
     formBlock.prepend(htmlToElement('<div class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Automatyzacja wsadu</span></div>'));
 
+    // Attach to events
     var checkbox = document.getElementById('ex:kowal_autosubmit');
     var input = document.getElementById('ex:kowal_paste');
 
@@ -77,6 +80,7 @@
         }
     });
 
+    // Methods
     function fail() {
         alert('Struktura strony uległa zmianie. Brak możliwości aktywowania rozszerzenia.');
     }
