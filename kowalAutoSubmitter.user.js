@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Kowal Auto Submiter
+// @name         Kowal Auto Submitter
 // @namespace    http://www.google.com/search?q=mabakay
 // @version      1.0
 // @description  Allows to automaticaly parse and submit of scaned codes.
