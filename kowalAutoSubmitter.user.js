@@ -10,6 +10,8 @@
 // @license      GPL-3.0
 // @run-at       document-end
 // @supportURL   https://github.com/mabakay/kowalAutoSubmitter
+// @updateURL    https://github.com/mabakay/kowalAutoSubmitter/raw/master/kowalAutoSubmitter.user.js
+// @downloadURL  https://github.com/mabakay/kowalAutoSubmitter/raw/master/kowalAutoSubmitter.user.js
 // @match        https://portal-prod-pl.nmvs.eu/NMVS_PORTAL/sn/Serialnumber.xhtml*
 // @grant        none
 // ==/UserScript==
