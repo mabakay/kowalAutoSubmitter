@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name         Kowal Auto Submitter
+// @name         Kowal Auto Submiter
 // @namespace    http://www.google.com/search?q=mabakay
 // @version      1.0
 // @description  Allows to automaticaly parse and submit of scaned codes.
 // @description:pl-PL Pozwala na automatyczne parsowanie i wysyłanie zeskanowanych kodów.
 // @author       mabakay
 // @copyright    2019, mabakay
-// @date         12 may 2019
+// @date         13 may 2019
 // @license      GPL-3.0
 // @run-at       document-end
 // @supportURL   https://github.com/mabakay/kowalAutoSubmitter
@@ -63,6 +63,9 @@
             if (parse(pastedData.substr(0, pastedData.length - 2))) {
                 if (checkbox.checked) {
                     executeButton.click();
+
+                    input.focus();
+                    input.select();
                 }
             }
         }
@@ -71,11 +74,18 @@
     input.addEventListener("keydown", function (event) {
         // Number 13 is the "Enter" key on the keyboard
         if (event.keyCode === 13) {
-            if (!parse(input.value)) {
-                event.preventDefault();
-                event.stopPropagation();
+            event.preventDefault();
+            event.stopImmediatePropagation();
 
+            if (!parse(input.value)) {
                 alert('Nieprawidłowy kod produktu.');
+            } else {
+                if (checkbox.checked) {
+                    executeButton.click();
+                }
+
+                input.focus();
+                input.select();
             }
         }
     });
