@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         Kowal Auto Submiter
 // @namespace    http://www.google.com/search?q=mabakay
-// @version      1.0
+// @version      1.1
 // @description  Allows to automaticaly parse and submit of scaned codes.
 // @description:pl-PL Pozwala na automatyczne parsowanie i wysyłanie zeskanowanych kodów.
 // @author       mabakay
 // @copyright    2019, mabakay
-// @date         13 may 2019
+// @date         16 may 2019
 // @license      GPL-3.0
 // @run-at       document-end
 // @supportURL   https://github.com/mabakay/kowalAutoSubmitter
@@ -18,6 +18,15 @@
 
 (function () {
     'use strict';
+
+    var parsePaterns = [
+        /^01(?<gtin>.+?)17(?<expiry>[0-9]{6}?)21(?<serialNr>.+?)10(?<lot>.+?)$/,
+        /^01(?<gtin>.+?)21(?<serialNr>.+?)17(?<expiry>[0-9]{6}?)10(?<lot>.+?)$/,
+        /^01(?<gtin>.+?)10(?<lot>.+?)17(?<expiry>[0-9]{6}?)21(?<serialNr>.+?)$/,
+        /^01(?<gtin>.+?)17(?<expiry>[0-9]{6}?)10(?<lot>.+?)21(?<serialNr>.+?)$/,
+        /^01(?<gtin>.+?)21(?<serialNr>.+?)10(?<lot>.+?)17(?<expiry>[0-9]{6}?)$/,
+        /^01(?<gtin>.+?)10(?<lot>.+?)21(?<serialNr>.+?)17(?<expiry>[0-9]{6}?)$/
+    ]
 
     // Validate site
     var formBlock = document.getElementById('serialnumberForm:snPrcessPanel');
@@ -114,19 +123,15 @@
         var lot = null;
         var expiry = null;
 
-        var match = code.match(/^01(.+?)17(.+?)21(.+?)10(.+?)$/);
-        if (match != null) {
-            gtin = match[1];
-            expiry = match[2];
-            serialNr = match[3];
-            lot = match[4];
-        } else {
-            match = code.match(/^01(.+?)17(.+?)10(.+?)21(.+?)$/);
+        for (var i = 0; i < parsePaterns.length; i++) {
+            var match = code.match(parsePaterns[i]);
             if (match != null) {
-                gtin = match[1];
-                expiry = match[2];
-                lot = match[3];
-                serialNr = match[4];
+                gtin = match.groups.gtin;
+                expiry = match.groups.expiry;
+                serialNr = match.groups.serialNr;
+                lot = match.groups.lot;
+
+                break;
             }
         }
 
