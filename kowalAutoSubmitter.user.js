@@ -52,6 +52,8 @@
     // Resize whole data table
     tableBlock.classList.add('col-md-12');
     tableBlock.classList.remove('col-md-6');
+    tableBlock.classList.add('col-lg-12');
+    tableBlock.classList.remove('col-lg-6');
 
     // Inject extended fields
     formBlock.prepend(htmlToElement('<div class="ui-panel-content ui-widget-content"><div><div class="row"><div class="hidden-md col-xs-4"><label for="ex:kowal_paste">Kod produktu (<input id="ex:kowal_autosubmit" type="checkbox" checked="checked"><label for="ex:kowal_autosubmit">wysyłaj automatycznie</label>)</label></div><div class="hidden-md col-xs-8"><input id="ex:kowal_paste" type="text" placeholder="Zeskanuj lub przepisz kod..." class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all"></div></div></div></div>'));
