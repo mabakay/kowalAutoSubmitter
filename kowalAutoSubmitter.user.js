@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Kowal Auto Submiter
 // @namespace    http://www.google.com/search?q=mabakay
-// @version      1.22
+// @version      1.23
 // @description  Allows to automaticaly parse and submit of scaned codes.
 // @description:pl-PL Pozwala na automatyczne parsowanie i wysyłanie zeskanowanych kodów.
 // @author       mabakay
@@ -34,7 +34,7 @@
         fail();
     }
 
-    var tableBlock = document.getElementById('serialnumberForm:j_id_27');
+    var tableBlock = document.getElementById('serialnumberForm:j_id_28');
     if (tableBlock == null) {
         fail();
     }
@@ -50,7 +50,8 @@
     }
 
     // Resize whole data table
-    tableBlock.setAttribute('style', 'width: 100%');
+    tableBlock.classList.add('col-md-12');
+    tableBlock.classList.remove('col-md-6');
 
     // Inject extended fields
     formBlock.prepend(htmlToElement('<div class="ui-panel-content ui-widget-content"><div><div class="row"><div class="hidden-md col-xs-4"><label for="ex:kowal_paste">Kod produktu (<input id="ex:kowal_autosubmit" type="checkbox" checked="checked"><label for="ex:kowal_autosubmit">wysyłaj automatycznie</label>)</label></div><div class="hidden-md col-xs-8"><input id="ex:kowal_paste" type="text" placeholder="Zeskanuj lub przepisz kod..." class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all"></div></div></div></div>'));
