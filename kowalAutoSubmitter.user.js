@@ -6,7 +6,7 @@
 // @description:pl-PL Pozwala na automatyczne parsowanie i wysyłanie zeskanowanych kodów.
 // @author       mabakay
 // @copyright    2019, mabakay
-// @date         01 July 2019
+// @date         02 August 2019
 // @license      GPL-3.0
 // @run-at       document-end
 // @supportURL   https://github.com/mabakay/kowalAutoSubmitter
