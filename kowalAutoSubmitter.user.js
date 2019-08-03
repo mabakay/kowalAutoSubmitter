@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         Kowal Auto Submiter
 // @namespace    http://www.google.com/search?q=mabakay
-// @version      1.24
+// @version      1.25
 // @description  Allows to automaticaly parse and submit of scaned codes.
 // @description:pl-PL Pozwala na automatyczne parsowanie i wysyłanie zeskanowanych kodów.
 // @author       mabakay
 // @copyright    2019, mabakay
-// @date         02 August 2019
+// @date         03 August 2019
 // @license      GPL-3.0
 // @run-at       document-end
 // @supportURL   https://github.com/mabakay/kowalAutoSubmitter
@@ -28,6 +28,16 @@
         /^01(?<gtin>.{14}?)10(?<lot>.{1,20}?)21(?<serialNr>.{1,20}?)17(?<expiry>[0-9]{6}?)$/
     ]
 
+    // Check if redirected to login page
+    var forms = document.getElementsByTagName('form');
+    if (forms != null) {
+        for (var i = 0; i < forms.length; i++) {
+            if (forms[i].action.indexOf('login.xhtml') > -1) {
+                return;
+            }
+        }
+    }
+    
     // Validate site
     var formBlock = document.getElementById('serialnumberForm:snProcessPanel');
     if (formBlock == null) {
