@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         Kowal Auto Submiter
 // @namespace    http://www.google.com/search?q=mabakay
-// @version      1.25
+// @version      1.3
 // @description  Allows to automaticaly parse and submit of scaned codes.
 // @description:pl-PL Pozwala na automatyczne parsowanie i wysyłanie zeskanowanych kodów.
 // @author       mabakay
 // @copyright    2019, mabakay
-// @date         03 August 2019
+// @date         02 August 2019
 // @license      GPL-3.0
 // @run-at       document-end
 // @supportURL   https://github.com/mabakay/kowalAutoSubmitter
@@ -37,82 +37,40 @@
             }
         }
     }
-    
-    // Validate site
-    var formBlock = document.getElementById('serialnumberForm:snProcessPanel');
-    if (formBlock == null) {
-        fail();
-    }
 
+    // Validate site
     var tableBlock = document.getElementById('serialnumberForm:j_id_28');
     if (tableBlock == null) {
         fail();
+        return;
+    } else {
+        // Resize whole data table
+        tableBlock.classList.add('col-md-12');
+        tableBlock.classList.remove('col-md-6');
+        tableBlock.classList.add('col-lg-12');
+        tableBlock.classList.remove('col-lg-6');
     }
 
-    var gtinInput = document.getElementById('serialnumberForm:gtin')
-    var serialNrInput = document.getElementById('serialnumberForm:serialNr')
-    var lotInput = document.getElementById('serialnumberForm:lot')
-    var expiryInput = document.getElementById('serialnumberForm:expiry')
-    var executeButton = document.getElementById('serialnumberForm:execute')
-
-    if (gtinInput == null || serialNrInput == null || lotInput == null || expiryInput == null || executeButton == null) {
-        fail();
-    }
-
-    // Resize whole data table
-    tableBlock.classList.add('col-md-12');
-    tableBlock.classList.remove('col-md-6');
-    tableBlock.classList.add('col-lg-12');
-    tableBlock.classList.remove('col-lg-6');
-
-    // Inject extended fields
-    formBlock.prepend(htmlToElement('<div class="ui-panel-content ui-widget-content"><div><div class="row"><div class="hidden-md col-xs-4"><label for="ex:kowal_paste">Kod produktu (<input id="ex:kowal_autosubmit" type="checkbox" checked="checked"><label for="ex:kowal_autosubmit">wysyłaj automatycznie</label>)</label></div><div class="hidden-md col-xs-8"><input id="ex:kowal_paste" type="text" placeholder="Zeskanuj lub przepisz kod..." class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all"></div></div></div></div>'));
-    formBlock.prepend(htmlToElement('<div class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Automatyzacja wsadu</span></div>'));
-
-    // Attach to events
-    var checkbox = document.getElementById('ex:kowal_autosubmit');
-    var input = document.getElementById('ex:kowal_paste');
-
-    input.addEventListener('paste', function (event) {
-        // Get pasted data via clipboard API
-        var clipboardData = event.clipboardData || window.clipboardData;
-        var pastedData = clipboardData.getData('Text');
-
-        if (pastedData.length >= 2 && pastedData.substr(pastedData.length - 2) == '\r\n') {
-            event.stopPropagation();
-            event.preventDefault();
-
-            input.value = pastedData;
-
-            if (parse(pastedData.substr(0, pastedData.length - 2))) {
-                if (checkbox.checked) {
-                    executeButton.click();
+    // Detect form table change
+    var callbackForm = function (mutations, observer) {
+        for (var m = 0; m < mutations.length; ++m) {
+            if (mutations[m].type == 'childList' && mutations[m].addedNodes.length > 0) {
+                for (var i = 0; i < mutations[m].addedNodes.length; ++i) {
+                    if (mutations[m].addedNodes[i].id == "serialnumberForm:snProcessPanel") {
+                        attachForm();
+                    }
                 }
-
-                input.focus();
-                input.select();
             }
         }
-    });
+    };
 
-    input.addEventListener("keydown", function (event) {
-        // Number 13 is the "Enter" key on the keyboard
-        if (event.keyCode === 13) {
-            event.preventDefault();
-            event.stopImmediatePropagation();
+    var observerForm = new MutationObserver(callbackForm);
+    observerForm.observe(tableBlock, { attributes: false, childList: true, subtree: false });
 
-            if (!parse(input.value)) {
-                alert('Nieprawidłowy kod produktu.');
-            } else {
-                if (checkbox.checked) {
-                    executeButton.click();
-                }
+    attachForm();
 
-                input.focus();
-                input.select();
-            }
-        }
-    });
+    // Disable original site focus
+    PrimeFaces.focus = function () { };
 
     // Detect result table change
     var resetButtonClicked = false;
@@ -126,7 +84,7 @@
 
     var resultTable = document.getElementById('serialnumberForm:snListPanel');
 
-    var callback = function (mutations, observer) {
+    var callbackResult = function (mutations, observer) {
         if (resetButtonClicked) {
             resetButtonClicked = false;
             return;
@@ -160,8 +118,8 @@
         }
     };
 
-    var observer = new MutationObserver(callback);
-    observer.observe(resultTable, { attributes: false, childList: true, subtree: false });
+    var observerResult = new MutationObserver(callbackResult);
+    observerResult.observe(resultTable, { attributes: false, childList: true, subtree: false });
 
     // Sound functionality
     var sounds = {
@@ -180,6 +138,78 @@
     }
 
     // Methods
+    function attachForm() {
+        var formBlock = document.getElementById('serialnumberForm:snProcessPanel');
+        if (formBlock == null) {
+            fail();
+            return;
+        }
+
+        var gtinInput = document.getElementById('serialnumberForm:gtin')
+        var serialNrInput = document.getElementById('serialnumberForm:serialNr')
+        var lotInput = document.getElementById('serialnumberForm:lot')
+        var expiryInput = document.getElementById('serialnumberForm:expiry')
+        var executeButton = document.getElementById('serialnumberForm:execute')
+
+        if (gtinInput == null || serialNrInput == null || lotInput == null || expiryInput == null || executeButton == null) {
+            fail();
+            return;
+        }
+
+        // Inject extended fields
+        formBlock.prepend(htmlToElement('<div class="ui-panel-content ui-widget-content"><div><div class="row"><div class="hidden-md col-xs-4"><label for="ex:kowal_paste">Kod produktu (<input id="ex:kowal_autosubmit" type="checkbox" checked="checked"><label for="ex:kowal_autosubmit">wysyłaj automatycznie</label>)</label></div><div class="hidden-md col-xs-8"><input id="ex:kowal_paste" type="text" placeholder="Zeskanuj lub przepisz kod..." class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all"></div></div></div></div>'));
+        formBlock.prepend(htmlToElement('<div class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Automatyzacja wsadu</span></div>'));
+
+        // Attach to events
+        var checkbox = document.getElementById('ex:kowal_autosubmit');
+        var input = document.getElementById('ex:kowal_paste');
+
+        // Foxus on input
+        input.focus();
+        input.select();
+        
+        input.addEventListener('paste', function (event) {
+            // Get pasted data via clipboard API
+            var clipboardData = event.clipboardData || window.clipboardData;
+            var pastedData = clipboardData.getData('Text');
+
+            if (pastedData.length >= 2 && pastedData.substr(pastedData.length - 2) == '\r\n') {
+                event.stopPropagation();
+                event.preventDefault();
+
+                input.value = pastedData;
+
+                if (parse(pastedData.substr(0, pastedData.length - 2), gtinInput, serialNrInput, lotInput, expiryInput)) {
+                    if (checkbox.checked) {
+                        executeButton.click();
+                    }
+
+                    input.focus();
+                    input.select();
+                }
+            }
+        });
+
+        input.addEventListener("keydown", function (event) {
+            // Number 13 is the "Enter" key on the keyboard
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+
+                if (!parse(input.value, gtinInput, serialNrInput, lotInput, expiryInput)) {
+                    alert('Nieprawidłowy kod produktu.');
+                } else {
+                    if (checkbox.checked) {
+                        executeButton.click();
+                    }
+
+                    input.focus();
+                    input.select();
+                }
+            }
+        });
+    }
+
     function fail() {
         alert('Struktura strony uległa zmianie. Brak możliwości aktywowania rozszerzenia.');
     }
@@ -191,7 +221,7 @@
         return template.content.firstChild;
     }
 
-    function parse(code) {
+    function parse(code, gtinInput, serialNrInput, lotInput, expiryInput) {
         if (code.length < 2) {
             return false;
         }
