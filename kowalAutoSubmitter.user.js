@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         Kowal Auto Submiter
 // @namespace    http://www.google.com/search?q=mabakay
-// @version      1.30
+// @version      1.31
 // @description  Allows to automaticaly parse and submit of scaned codes.
 // @description:pl-PL Pozwala na automatyczne parsowanie i wysyłanie zeskanowanych kodów.
 // @author       mabakay
 // @copyright    2019, mabakay
-// @date         02 August 2019
+// @date         23 October 2019
 // @license      GPL-3.0
 // @run-at       document-end
 // @supportURL   https://github.com/mabakay/kowalAutoSubmitter
@@ -25,7 +25,8 @@
         /^01(?<gtin>.{14}?)10(?<lot>.{1,20}?)17(?<expiry>[0-9]{6}?)21(?<serialNr>.{1,20}?)$/,
         /^01(?<gtin>.{14}?)17(?<expiry>[0-9]{6}?)10(?<lot>.{1,20}?)21(?<serialNr>.{1,20}?)$/,
         /^01(?<gtin>.{14}?)21(?<serialNr>.{1,20}?)10(?<lot>.{1,20}?)17(?<expiry>[0-9]{6}?)$/,
-        /^01(?<gtin>.{14}?)10(?<lot>.{1,20}?)21(?<serialNr>.{1,20}?)17(?<expiry>[0-9]{6}?)$/
+        /^01(?<gtin>.{14}?)10(?<lot>.{1,20}?)21(?<serialNr>.{1,20}?)17(?<expiry>[0-9]{6}?)$/,
+        /^10(?<lot>.{1,20}?)17(?<expiry>[0-9]{6}?)01(?<gtin>.{14}?)21(?<serialNr>.{1,20}?)$/
     ]
 
     // Check if redirected to login page
