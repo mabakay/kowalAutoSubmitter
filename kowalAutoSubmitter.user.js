@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Kowal Auto Submiter
 // @namespace    http://www.google.com/search?q=mabakay
-// @version      1.32
+// @version      1.33
 // @description  Allows to automaticaly parse and submit of scaned codes.
 // @description:pl-PL Pozwala na automatyczne parsowanie i wysyłanie zeskanowanych kodów.
 // @author       mabakay
@@ -122,7 +122,14 @@
                                     console.log('success');
                                     playSound('success');
                                 }
+
+                                // Focus on input
+                                var input = document.getElementById('ex:kowal_paste');
+                                input.focus();
+                                input.select();
                             }, 250);
+
+                            return;
                         }
                     }
                 }
