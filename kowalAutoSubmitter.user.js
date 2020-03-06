@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         Kowal Auto Submiter
 // @namespace    http://www.google.com/search?q=mabakay
-// @version      1.31
+// @version      1.32
 // @description  Allows to automaticaly parse and submit of scaned codes.
 // @description:pl-PL Pozwala na automatyczne parsowanie i wysyłanie zeskanowanych kodów.
 // @author       mabakay
-// @copyright    2019, mabakay
-// @date         23 October 2019
+// @copyright    2019 - 2020, mabakay
+// @date         06 March 2020
 // @license      GPL-3.0
 // @run-at       document-end
 // @supportURL   https://github.com/mabakay/kowalAutoSubmitter
@@ -66,7 +66,7 @@
     };
 
     var observerForm = new MutationObserver(callbackForm);
-    observerForm.observe(tableBlock, { attributes: false, childList: true, subtree: false });
+    observerForm.observe(tableBlock, { attributes: false, childList: true, subtree: true });
 
     attachForm();
 
@@ -104,14 +104,25 @@
                                 return;
                             }
 
-                            // Check if last row has failed status
-                            if (lastRow.getElementsByClassName('snRowStyleFailed').length > 0) {
-                                console.log('fail');
-                                playSound('fail');
-                            } else {
-                                console.log('success');
-                                playSound('success');
+                            // Change page to last
+                            var lastPageButton = document.querySelector('.ui-paginator-last');
+                            if (lastPageButton != null) {
+                                lastPageButton.click();
                             }
+
+                            // Check if last row has failed status
+                            setTimeout(function () {
+                                table = document.querySelector('#serialnumberForm\\3A dataTable table');
+                                lastRow = table.rows[table.rows.length - 1];
+
+                                if (lastRow.getElementsByClassName('snRowStyleFailed').length > 0) {
+                                    console.log('fail');
+                                    playSound('fail');
+                                } else {
+                                    console.log('success');
+                                    playSound('success');
+                                }
+                            }, 250);
                         }
                     }
                 }
