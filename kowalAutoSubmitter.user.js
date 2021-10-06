@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Kowal Auto Submiter
 // @namespace    http://www.google.com/search?q=mabakay
-// @version      1.38
+// @version      1.39
 // @description  Allows to automaticaly parse and submit of scaned codes.
 // @description:pl-PL Pozwala na automatyczne parsowanie i wysyłanie zeskanowanych kodów.
 // @author       mabakay
@@ -39,19 +39,6 @@
         }
     }
 
-    // Validate site
-    var tableBlock = document.getElementById('serialnumberForm:j_id_28');
-    if (tableBlock == null) {
-        fail();
-        return;
-    } else {
-        // Resize whole data table
-        tableBlock.classList.add('col-md-12');
-        tableBlock.classList.remove('col-md-6');
-        tableBlock.classList.add('col-lg-12');
-        tableBlock.classList.remove('col-lg-6');
-    }
-
     // Detect form table change
     var container = document.getElementById('j_id_21');
     if (container == null) {
@@ -74,73 +61,6 @@
     // Disable original site focus
     PrimeFaces.focus = function () { };
 
-    // Detect result table change
-    var resetButtonClicked = false;
-
-    var resetButton = document.getElementById('serialnumberForm:resetDataTable');
-    if (resetButton != null) {
-        resetButton.addEventListener('click', function () {
-            resetButtonClicked = true;
-        });
-    }
-
-    var resultTable = document.getElementById('serialnumberForm:snListPanel');
-
-    var callbackResult = function (mutations, observer) {
-        if (resetButtonClicked) {
-            resetButtonClicked = false;
-            return;
-        }
-
-        for (var m = 0; m < mutations.length; ++m) {
-            if (mutations[m].type == 'childList' && mutations[m].addedNodes.length > 0) {
-                for (var i = 0; i < mutations[m].addedNodes.length; ++i) {
-                    if (mutations[m].addedNodes[i].id == "serialnumberForm:dataTable") {
-                        var table = mutations[m].addedNodes[i].getElementsByTagName('table')[0];
-
-                        if (table.rows.length > 0) {
-                            var lastRow = table.rows[table.rows.length - 1];
-
-                            if (table.rows.length == 2 && lastRow.getElementsByTagName('td').length == 1) {
-                                return;
-                            }
-
-                            // Change page to last
-                            var lastPageButton = document.querySelector('.ui-paginator-last');
-                            if (lastPageButton != null) {
-                                lastPageButton.click();
-                            }
-
-                            // Check if last row has failed status
-                            setTimeout(function () {
-                                table = document.querySelector('#serialnumberForm\\3A dataTable table');
-                                lastRow = table.rows[table.rows.length - 1];
-
-                                if (lastRow.getElementsByClassName('snRowStyleFailed').length > 0) {
-                                    console.log('fail');
-                                    playSound('fail');
-                                } else {
-                                    console.log('success');
-                                    playSound('success');
-                                }
-
-                                // Focus on input
-                                var input = document.getElementById('ex:kowal_paste');
-                                input.focus();
-                                input.select();
-                            }, 250);
-
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-    };
-
-    var observerResult = new MutationObserver(callbackResult);
-    observerResult.observe(resultTable, { attributes: false, childList: true, subtree: false });
-
     // Sound functionality
     var sounds = {
         "fail": {
@@ -159,6 +79,20 @@
 
     // Methods
     function attachForm() {
+        // Validate site
+        var tableBlock = document.getElementById('serialnumberForm:j_id_28');
+        if (tableBlock == null) {
+            fail();
+            return;
+        } else {
+            // Resize whole data table
+            tableBlock.classList.add('col-md-12');
+            tableBlock.classList.remove('col-md-6');
+            tableBlock.classList.add('col-lg-12');
+            tableBlock.classList.remove('col-lg-6');
+        }
+
+        // Validate form
         var formBlock = document.getElementById('serialnumberForm:snProcessPanel');
         if (formBlock == null) {
             fail();
@@ -175,6 +109,73 @@
             fail();
             return;
         }
+
+        // Detect result table change
+        var resetButtonClicked = false;
+
+        var resetButton = document.getElementById('serialnumberForm:resetDataTable');
+        if (resetButton != null) {
+            resetButton.addEventListener('click', function () {
+                resetButtonClicked = true;
+            });
+        }
+
+        var resultTable = document.getElementById('serialnumberForm:snListPanel');
+
+        var callbackResult = function (mutations, observer) {
+            if (resetButtonClicked) {
+                resetButtonClicked = false;
+                return;
+            }
+
+            for (var m = 0; m < mutations.length; ++m) {
+                if (mutations[m].type == 'childList' && mutations[m].addedNodes.length > 0) {
+                    for (var i = 0; i < mutations[m].addedNodes.length; ++i) {
+                        if (mutations[m].addedNodes[i].id == "serialnumberForm:dataTable") {
+                            var table = mutations[m].addedNodes[i].getElementsByTagName('table')[0];
+
+                            if (table.rows.length > 0) {
+                                var lastRow = table.rows[table.rows.length - 1];
+
+                                if (table.rows.length == 2 && lastRow.getElementsByTagName('td').length == 1) {
+                                    return;
+                                }
+
+                                // Change page to last
+                                var lastPageButton = document.querySelector('.ui-paginator-last');
+                                if (lastPageButton != null) {
+                                    lastPageButton.click();
+                                }
+
+                                // Check if last row has failed status
+                                setTimeout(function () {
+                                    table = document.querySelector('#serialnumberForm\\3A dataTable table');
+                                    lastRow = table.rows[table.rows.length - 1];
+
+                                    if (lastRow.getElementsByClassName('snRowStyleFailed').length > 0) {
+                                        console.log('fail');
+                                        playSound('fail');
+                                    } else {
+                                        console.log('success');
+                                        playSound('success');
+                                    }
+
+                                    // Focus on input
+                                    var input = document.getElementById('ex:kowal_paste');
+                                    input.focus();
+                                    input.select();
+                                }, 250);
+
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        var observerResult = new MutationObserver(callbackResult);
+        observerResult.observe(resultTable, { attributes: false, childList: true, subtree: false });
 
         // Inject extended fields
         formBlock.prepend(htmlToElement('<div class="ui-panel-content ui-widget-content"><div><div class="row"><div class="hidden-md col-xs-4"><label for="ex:kowal_paste">Kod produktu (<input id="ex:kowal_autosubmit" type="checkbox" checked="checked"><label for="ex:kowal_autosubmit">wysyłaj automatycznie</label>)</label></div><div class="hidden-md col-xs-8"><input id="ex:kowal_paste" type="text" placeholder="Zeskanuj lub przepisz kod..." class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all"></div></div></div></div>'));
