@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         Kowal Auto Submiter
 // @namespace    http://www.google.com/search?q=mabakay
-// @version      1.37
+// @version      1.38
 // @description  Allows to automaticaly parse and submit of scaned codes.
 // @description:pl-PL Pozwala na automatyczne parsowanie i wysyłanie zeskanowanych kodów.
 // @author       mabakay
 // @copyright    2019 - 2021, mabakay
-// @date         05 October 2021
+// @date         06 October 2021
 // @license      GPL-3.0
 // @run-at       document-end
 // @supportURL   https://github.com/mabakay/kowalAutoSubmitter
@@ -53,20 +53,21 @@
     }
 
     // Detect form table change
+    var container = document.getElementById('j_id_21');
+    if (container == null) {
+        fail();
+        return;
+    }
+
     var callbackForm = function (mutations, observer) {
-        for (var m = 0; m < mutations.length; ++m) {
-            if (mutations[m].type == 'childList' && mutations[m].addedNodes.length > 0) {
-                for (var i = 0; i < mutations[m].addedNodes.length; ++i) {
-                    if (mutations[m].addedNodes[i].id == "serialnumberForm:snProcessPanel") {
-                        attachForm();
-                    }
-                }
-            }
+        var kowalExtensionAttached = document.getElementById('ex:kowal_autosubmit');
+        if (kowalExtensionAttached == null && formAttachPossible()) {
+            attachForm();
         }
     };
 
     var observerForm = new MutationObserver(callbackForm);
-    observerForm.observe(tableBlock, { attributes: false, childList: true, subtree: true });
+    observerForm.observe(container, { attributes: false, childList: true, subtree: true });
 
     attachForm();
 
@@ -186,7 +187,7 @@
         // Foxus on input
         input.focus();
         input.select();
-        
+
         input.addEventListener('paste', function (event) {
             // Get pasted data via clipboard API
             var clipboardData = event.clipboardData || window.clipboardData;
@@ -229,8 +230,22 @@
         });
     }
 
+    function formAttachPossible() {
+        var gtinInput = document.getElementById('serialnumberForm:productCode')
+        var serialNrInput = document.getElementById('serialnumberForm:serialNr')
+        var lotInput = document.getElementById('serialnumberForm:lot')
+        var expiryInput = document.getElementById('serialnumberForm:expiry')
+        var executeButton = document.getElementById('serialnumberForm:execute')
+
+        if (gtinInput == null || serialNrInput == null || lotInput == null || expiryInput == null || executeButton == null) {
+            return false;
+        }
+
+        return true;
+    }
+
     function fail() {
-        alert('Struktura strony uległa zmianie. Brak możliwości aktywowania rozszerzenia.');
+        alert('Struktura strony uległa zmianie lub wybrany jest nieobsługiwany proces / formularz. Brak możliwości aktywowania rozszerzenia.');
     }
 
     function htmlToElement(html) {
