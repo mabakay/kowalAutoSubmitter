@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Kowal Auto Submiter
 // @namespace    http://www.google.com/search?q=mabakay
-// @version      1.40
+// @version      1.41
 // @description  Allows to automaticaly parse and submit of scaned codes.
 // @description:pl-PL Pozwala na automatyczne parsowanie i wysyłanie zeskanowanych kodów.
 // @author       mabakay
@@ -40,7 +40,7 @@
     }
 
     // Detect form table change
-    var container = document.getElementById('serialnumberForm');
+    var container = document.getElementsByTagName('body')[0];
     if (container == null) {
         fail();
         return;
@@ -56,7 +56,7 @@
     var observerForm = new MutationObserver(callbackForm);
     observerForm.observe(container, { attributes: false, childList: true, subtree: true });
 
-    attachForm(true);
+    attachForm();
 
     // Disable original site focus
     PrimeFaces.focus = function () { };
@@ -78,7 +78,7 @@
     }
 
     // Methods
-    function attachForm(init) {
+    function attachForm() {
         // Validate site
         var tableBlock = document.getElementById('serialnumberForm:j_id_24');
         if (tableBlock == null) {
@@ -120,9 +120,10 @@
             });
         }
 
-        if (init) {
-            var resultTable = document.getElementById('serialnumberForm:snListPanel');
+				   
+        var resultTable = document.getElementById('serialnumberForm:snListPanel');
 
+        if (resultTable.observer == null) {
             var callbackResult = function (mutations, observer) {
                 if (resetButtonClicked) {
                     resetButtonClicked = false;
@@ -173,11 +174,12 @@
                         }
                     }
                 }
-			 
             };
 
             var observerResult = new MutationObserver(callbackResult);
             observerResult.observe(resultTable, { attributes: false, childList: true, subtree: false });
+
+            resultTable.observer = observerResult;
         }
 
         // Inject extended fields
